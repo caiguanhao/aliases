@@ -42,8 +42,8 @@ alias gaa='git add -A .'
 alias gam='git am'
 alias gap='git add -p'
       gar() { CARE "git archive >CB< -o >CB<-latest.tar.gz"; }
-      gb()  { git branch $@ | column -c $(tput cols) | less -XSFR }
-      gbc() { git rev-parse --abbrev-ref HEAD }
+      gb()  { git branch $@ | column -c $(tput cols) | less -XSFR; }
+      gbc() { git rev-parse --abbrev-ref HEAD; }
 alias gbl='git blame'
       gblc() {
         [[ $# -ne 1 ]] && echo "gblc <file>" || {
@@ -58,7 +58,7 @@ alias gbl='git blame'
         --count 10 refs/heads/
       }
 alias gc='git checkout'
-      gch() { git cherry -v $@ | less -XSF }
+      gch() { git cherry -v $@ | less -XSF; }
 alias gcl='git clone'
       gclb() {
         [[ $# -ne 2 ]] && echo "gclb <branch> <URL>" || {

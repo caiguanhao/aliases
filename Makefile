@@ -12,11 +12,11 @@ endif
 
 aliases: git docker
 	$(SEDI) \
-	-e '$$a\'$$'\n''source ~/.git.sh' \
-	-e '$$a\'$$'\n''source ~/.docker.sh' \
 	-e '/.git.sh/d' \
 	-e '/.docker.sh/d' \
 	$(RC)
+	echo "source ~/.git.sh" >> $(RC)
+	echo "source ~/.docker.sh" >> $(RC)
 	@echo "Type . $(RC) to apply new aliases!"
 
 git:
