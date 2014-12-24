@@ -67,7 +67,22 @@ da()   { [[ $# -eq 0 ]]&&A="$(dpsl)"||A="$@"; d attach $A; }
 dl()   { [[ $# -eq 0 ]]&&A="$(dpsl)"||A="$@"; d logs $A 2>&1 | less -FXR; }
 dli()  { [[ $# -eq 0 ]]&&A="$(dil)"||A="$@"; d history $A 2>&1 | less -FSX; }
 dps()  { d ps $@ 2>&1 | less -FSX; }
-dpsa() { d ps -a $@ 2>&1 | less -FSX; }
+dpsa() {
+  d ps -a | awk 'NR==1{
+    A=index($0,"IMAGE");
+    B=substr($0,0,A-1);
+    C=index($0,"NAMES");
+    D=substr($0,A,C-A-1);
+    E=length($0);
+    F=substr($0,C)
+  }
+  NR==2{
+    print B F sprintf("%*s",length($0)-E,"") D
+  }
+  NR>1{
+    print substr($0,0,A-1)substr($0,C)substr($0,A,C-A-1)
+  }' | less -FSX;
+}
 din()  { d inspect $@ 2>&1 | less -FSX; }
 dlist(){
   [[ $# -lt 1 ]] && echo "List repo tags on hub registry: dlist <REPO>" || {
@@ -77,8 +92,8 @@ dlist(){
     done
   }
 }
-dpa()  { for c in $(dpsa -q); do dp $c; done; }
-dupa() { for c in $(dpsa -q); do dup $c; done; }
+dpa()  { for c in $(dpsaq); do dp $c; done; }
+dupa() { for c in $(dpsaq); do dup $c; done; }
 dwipe(){
   dupa 2>/dev/null; dka 2>/dev/null; drma 2>/dev/null; drmia 2>/dev/null;
 }
@@ -109,13 +124,14 @@ alias dp='d pause'
 alias dpid='din --format "{{.State.Pid}}"'
 alias dpl='d pull'
 alias dpo='d port'
+alias dpsaq='d ps -a -q'
 alias dpsl='d ps -lq'
 alias dr='d run'
 alias drd='d run -d'
 alias drit='d run -i -t'
 alias dritrm='d run -i -t --rm'
 alias drm='d rm'
-alias drms='drm $(comm -3 <(dps -q | sort) <(dpsa -q | sort))'
+alias drms='drm $(comm -3 <(dps -q | sort) <(dpsaq | sort))'
 alias drma='d rm $(d ps -aq)'
 alias drmi='d rmi'
 alias drmia='d rmi $(d images -q)'
