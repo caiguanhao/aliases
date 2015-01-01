@@ -63,7 +63,7 @@ dcd()  {
 }
 di()   { d images $@ 2>&1 | less -FSX; }
 dil()  { di -q | head -1 | tail -1; }
-da()   { [[ $# -eq 0 ]]&&A="$(dpsl)"||A="$@"; d attach $A; }
+da()   { [[ $# -eq 0 ]]&&A="$(dpsl)"||A="$@"; d attach --sig-proxy=false $A; }
 dl()   { [[ $# -eq 0 ]]&&A="$(dpsl)"||A="$@"; d logs $A 2>&1 | less -FXR; }
 dli()  { [[ $# -eq 0 ]]&&A="$(dil)"||A="$@"; d history $A 2>&1 | less -FSX; }
 dps()  { d ps $@ 2>&1 | less -FSX; }
