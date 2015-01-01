@@ -1,17 +1,21 @@
 # git aliases
 CARE() {
-  cbtpl=">CB<"
-  cbval="$(git rev-parse --abbrev-ref HEAD)"
-  commd="${@//$cbtpl/$cbval}"
-  cbtpl=">OCB<"
-  cbval="origin/$cbval"
-  commd="${commd//$cbtpl/$cbval}"
+  PC=
+  [[ -e ~/.proxychains/proxychains.conf ]] && {
+    PC=proxychains
+    hash proxychains4 2>/dev/null && PC="proxychains4 -q"
+  }
+  branch="$(git rev-parse --abbrev-ref HEAD)"
+  commd="${@//>CB</$branch}"
+  commd="${commd//>OCB</origin/$branch}"
+  commd="${commd//>PC</$PC}"
+  commd="$(echo $commd | sed -e 's/^ *//' -e 's/ *$//')"
   echo -e "\033[1;49;34m$commd\033[0m"
   sleep 1
   eval "$commd"
 }
 export GLFMT="%C(bold blue)%h%C(reset) (%ar) %s"
-unalias g gar gb gbc gblc gbr gch gclb gds gfh gg gl gla glc gld gmm gsf 2>/dev/null
+unalias g gar gb gbc gblc gbr gch gcl gclb gds gf gfh gg gl gla glc gld gmm gps gpl gsf 2>/dev/null
 g() {
   [[ $# -lt 1 ]] && {
     (echo "g='git'" && \
@@ -21,8 +25,10 @@ g() {
     echo "gblc='count contribs by author'" && \
     echo "gbr='show recent git branches'" && \
     echo "gch='git cherry -v'" && \
+    echo "gcl='git clone'" && \
     echo "gclb='clone single branch'" && \
     echo "gds='show diff size changes'" && \
+    echo "gf='git fetch --all'" && \
     echo "gfh='git fetch and reset hard'" && \
     echo "gg='git grep'" && \
     echo "gl='git log'" && \
@@ -30,8 +36,10 @@ g() {
     echo "glc='gla'" && \
     echo "gld='git log (files deleted)'" && \
     echo "gmm='checkout master, merge'" && \
+    echo "gps='git push (current branch)'" && \
+    echo "gpl='git pull (current branch)'" && \
     echo "gsf='diff stash [number]'" && \
-    alias | sed 's/^alias //' | grep git) | awk '{
+    alias | sed 's/^alias //' | grep -Fv .git | grep git) | awk '{
     sub(/\x27$/,"",$0);s=index($0,"="); printf "%5s = %s\n",
     substr($0,0,s-1), substr($0,s+2)}' | sort -k 1,1 -b | \
     column -c $(tput cols) | less -SFX
@@ -59,10 +67,10 @@ alias gbl='git blame'
       }
 alias gc='git checkout'
       gch() { git cherry -v $@ | less -XSF; }
-alias gcl='git clone'
+      gcl() { CARE ">PC< git clone $@"; }
       gclb() {
         [[ $# -ne 2 ]] && echo "gclb <branch> <URL>" || {
-           git clone --single-branch -b "$1" "$2";
+          CARE ">PC< git clone --single-branch -b $1 $2";
         }
       }
 alias gc-='git checkout -'
@@ -92,8 +100,8 @@ alias gdc='LESS=-FXR git diff --cached'
         close(orig); close(curr);
         }' | sort -nrk 3 | less -XSF
       }
-alias gf='git fetch --all'
-      gfh() { CARE "git fetch origin && git reset --hard >OCB<"; }
+      gf()  { CARE ">PC< git fetch --all"; }
+      gfh() { CARE ">PC< git fetch origin && git reset --hard >OCB<"; }
 alias gfp='git format-patch'
       gg() { git grep --break --heading -n -i -E $@; }
 alias gi='git init'
@@ -109,8 +117,20 @@ alias grc='git rebase --continue'
 alias grv='git remote -v'
 alias grm='git rebase master'
 alias grl='LESS=-FXRS git reflog'
-alias gps='CARE "git push origin >CB<"'
-alias gpl='CARE "git pull origin >CB<"'
+      gps() {
+        if [[ $# -lt 1 ]]; then
+	  CARE ">PC< git push origin >CB<";
+	else
+	  CARE ">PC< git push $@";
+        fi
+      }
+      gpl() {
+        if [[ $# -lt 1 ]]; then
+	  CARE ">PC< git pull origin >CB<";
+	else
+	  CARE ">PC< git pull $@";
+        fi
+      }
 alias gs='LESS=-XFR git -p status -uall'
 alias gsa='git stash apply'
 alias gsc='CARE "git stash clear"'
