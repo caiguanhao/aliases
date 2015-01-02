@@ -39,9 +39,9 @@ g() {
     echo "gps='git push (current branch)'" && \
     echo "gpl='git pull (current branch)'" && \
     echo "gsf='diff stash [number]'" && \
-    alias | sed 's/^alias //' | grep -Fv .git | grep git) | awk '{
-    sub(/\x27$/,"",$0);s=index($0,"="); printf "%5s = %s\n",
-    substr($0,0,s-1), substr($0,s+2)}' | sort -k 1,1 -b | \
+    alias | sed 's/^alias //' | \grep -Fv .git | \grep git) | awk '{
+    K=$0;gsub(/=.*$/,"",K); gsub(/(^.*=\47)|(\47.*?$)/,"",$0);
+    printf "%5s = %s\n",K,$0}' | sort -k 1,1 -b | \
     column -c $(tput cols) | less -SFX
   } || eval "git $@"
 }

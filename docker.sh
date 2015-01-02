@@ -26,9 +26,10 @@ d() {
     echo "denter='enter a container'" && \
     echo "dexpose='expose a port'" && \
     echo "dclose='close a port'" && \
-    alias | sed 's/^alias //' | grep ^d | grep 'd ') | awk '{
-    sub(/\x27$/,"",$0);s=index($0,"="); printf "%7s = %s\n",
-    substr($0,0,s-1), substr($0,s+2)}' | sort -k 1,1 -b | column
+    alias | sed 's/^alias //' | \grep ^d | \grep 'd ') | awk '{
+    K=$0;gsub(/=.*$/,"",K); gsub(/(^.*=\47)|(\47.*?$)/,"",$0);
+    printf "%7s = %s\n",K,$0}' | sort -k 1,1 -b | \
+    column -c $(tput cols) | less -SFX
   } || eval 'docker $@'
 }
 dex() {

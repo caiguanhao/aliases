@@ -1,14 +1,14 @@
 unalias ? reload 2>/dev/null
 
-?() {
+function ? {
   printf "c='clear'"\
 "\nbashrc='edit bashrc and reload'"\
 "\nzshrc='edit zshrc and reload'"\
 "\nreload='reload bashrc or zshrc'"\
 "\npc='toggle enable proxychains'"\
-"\n" | awk '{
-  sub(/\x27$/,"",$0);s=index($0,"="); printf "%6s = %s\n",
-  substr($0,0,s-1), substr($0,s+2)}' | sort -k 1,1 -b | \
+"\n" | awk '{K=$0;gsub(/=.*$/,"",K);
+  gsub(/(^.*=\47)|(\47.*?$)/,"",$0);
+  printf "%6s = %s\n",K,$0}' | sort -k 1,1 -b | \
   column -c $(tput cols) | less -SFX
 }
 
