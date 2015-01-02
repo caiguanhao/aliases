@@ -1,5 +1,5 @@
 unalias d dex dexi dim dimi dcd di dil da dl dli dlist dps dpsa dpa dupa din \
-dwipe denter dexpose dclose 2>/dev/null
+dwipe denter dexpose dclose f 2>/dev/null
 d() {
   [[ $# -lt 1 ]] && {
     (echo "d='docker'" && \
@@ -26,11 +26,19 @@ d() {
     echo "denter='enter a container'" && \
     echo "dexpose='expose a port'" && \
     echo "dclose='close a port'" && \
-    alias | sed 's/^alias //' | \grep ^d | \grep 'd ') | awk '{
+    alias | sed 's/^alias //' | \grep '^[df]' | \grep -E '(d |fig)') | awk '{
     K=$0;gsub(/=.*$/,"",K); gsub(/(^.*=\47)|(\47.*?$)/,"",$0);
     printf "%7s = %s\n",K,$0}' | sort -k 1,1 -b | \
     column -c $(tput cols) | less -SFX
   } || eval 'docker $@'
+}
+f() {
+  [[ $# -lt 1 ]] && {
+    alias | sed 's/^alias //' | \grep '^f' | \grep 'fig' | awk '{
+    K=$0;gsub(/=.*$/,"",K); gsub(/(^.*=\47)|(\47.*?$)/,"",$0);
+    printf "%7s = %s\n",K,$0}' | sort -k 1,1 -b | \
+    column -c $(tput cols) | less -SFX
+  } || eval 'fig $@'
 }
 dex() {
   [[ $# -lt 1 ]] && echo "Export container: dex <CONT> [CONT.tar.gz]" || {
@@ -143,3 +151,20 @@ alias dst='d stop'
 alias dsta='d stop $(d ps -aq)'
 alias dt='d tag'
 alias dup='d unpause'
+
+alias fb='fig build'
+alias fk='fig kill'
+alias fl='fig logs'
+alias fp='fig port'
+alias fps='fig ps'
+alias fpl='fig pull'
+alias frm='fig rm'
+alias fr='fig run'
+alias frd='fig run -d'
+alias frrm='fig run --rm'
+alias frs='fig restart'
+alias fs='fig start'
+alias fsc='fig scale'
+alias fst='fig stop'
+alias fup='fig up'
+alias fud='fig up -d'
