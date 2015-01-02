@@ -1,5 +1,5 @@
 unalias d dex dexi dim dimi dcd di dil da dl dli dlist dps dpsa dpa dupa din \
-dwipe denter dexpose dclose f 2>/dev/null
+dwipe denter dexpose dclose dclean f 2>/dev/null
 d() {
   [[ $# -lt 1 ]] && {
     (echo "d='docker'" && \
@@ -26,6 +26,7 @@ d() {
     echo "denter='enter a container'" && \
     echo "dexpose='expose a port'" && \
     echo "dclose='close a port'" && \
+    echo "dclean='remove useless images'" && \
     alias | sed 's/^alias //' | \grep '^[df]' | \grep -E '(d |fig)') | awk '{
     K=$0;gsub(/=.*$/,"",K); gsub(/(^.*=\47)|(\47.*?$)/,"",$0);
     printf "%7s = %s\n",K,$0}' | sort -k 1,1 -b | \
@@ -118,6 +119,13 @@ dclose(){
     IP=$(din --format "{{.NetworkSettings.IPAddress}}" $1)
     sudo iptables -t nat -D DOCKER -p tcp --dport $2 -j DNAT --to-destination $IP:$2
   }
+}
+dclean(){
+  XARGS=xargs
+  if xargs --help 2>&1 | grep -q 'no-run-if-empty'; then
+    XARGS="$XARGS --no-run-if-empty"
+  fi
+  docker images | grep '<none>' | awk '{print $3}' | $XARGS docker rmi;
 }
 alias db='d build'
 alias dco='d commit'
