@@ -5,14 +5,19 @@ CARE() {
     PC=proxychains
     hash proxychains4 2>/dev/null && PC="proxychains4 -q"
   }
-  branch="$(git rev-parse --abbrev-ref HEAD)"
-  commd="${@//>CB</$branch}"
-  commd="${commd//>OCB</origin/$branch}"
-  commd="${commd//>PC</$PC}"
-  commd="$(echo $commd | sed -e 's/^ *//' -e 's/ *$//')"
-  echo -e "\033[1;49;34m$commd\033[0m"
+  CMD="$@"
+  if [[ $CMD == *\>CB\<* || $CMD == *\>OCB\<* ]]; then
+    branch="$(git rev-parse --abbrev-ref HEAD)"
+    STATUS=$?
+    [[ $STATUS -ne 0 ]] && return
+    CMD="${CMD//>CB</$branch}"
+    CMD="${CMD//>OCB</origin/$branch}"
+  fi
+  CMD="${CMD//>PC</$PC}"
+  CMD="$(echo $CMD | sed -e 's/^ *//' -e 's/ *$//')"
+  echo -e "\033[1;49;34m$CMD\033[0m"
   sleep 1
-  eval "$commd"
+  eval "$CMD"
 }
 export GLFMT="%C(bold blue)%h%C(reset) (%ar) %s"
 unalias g gar gb gbc gblc gbr gch gcl gclb gds gf gfh gg gl gla glc gld gmm gps gpl gsf 2>/dev/null
@@ -113,22 +118,23 @@ alias gm='git merge'
       gmm() { CARE "git checkout master && git merge >CB<"; }
 alias gr='git rebase'
 alias gra='git rebase --abort'
+alias grao='git remote add origin'
 alias grc='git rebase --continue'
 alias grv='git remote -v'
 alias grm='git rebase master'
 alias grl='LESS=-FXRS git reflog'
       gps() {
-        if [[ $# -lt 1 ]]; then
-	  CARE ">PC< git push origin >CB<";
-	else
-	  CARE ">PC< git push $@";
+        if [[ $# -lt 1 || $1 == -* ]]; then
+          CARE ">PC< git push origin >CB< $@";
+        else
+          CARE ">PC< git push $@";
         fi
       }
       gpl() {
-        if [[ $# -lt 1 ]]; then
-	  CARE ">PC< git pull origin >CB<";
-	else
-	  CARE ">PC< git pull $@";
+        if [[ $# -lt 1 || $1 == -* ]]; then
+          CARE ">PC< git pull origin >CB< $@";
+        else
+          CARE ">PC< git pull $@";
         fi
       }
 alias gs='LESS=-XFR git -p status -uall'
