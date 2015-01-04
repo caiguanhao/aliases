@@ -6,6 +6,7 @@ function ? {
 "\nzshrc='edit zshrc and reload'"\
 "\nreload='reload bashrc or zshrc'"\
 "\npc='toggle enable proxychains'"\
+"\ngrepm='grep improved'"\
 "\n" | awk '{K=$0;gsub(/=.*$/,"",K);
   gsub(/(^.*=\47)|(\47.*?$)/,"",$0);
   printf "%6s = %s\n",K,$0}' | sort -k 1,1 -b | \
@@ -23,11 +24,8 @@ alias zshrc='vim ~/.zshrc && source ~/.zshrc'
           source ~/.bashrc
         }
       }
-
-# extend
-
 unalias grep 2>/dev/null
-alias grep='grep --exclude-dir={node_modules,bower_components,dist,.bzr,.cvs,.git,.hg,.svn,.tmp} --color=always'
+alias grepm='grep --exclude-dir={node_modules,bower_components,dist,.bzr,.cvs,.git,.hg,.svn,.tmp} --color=always'
 
 # proxychains
 
