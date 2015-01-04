@@ -120,9 +120,10 @@ alias gr='git rebase'
 alias gra='git rebase --abort'
 alias grao='git remote add origin'
 alias grc='git rebase --continue'
-alias grv='git remote -v'
-alias grm='git rebase master'
 alias grl='LESS=-FXRS git reflog'
+alias grm='git rebase master'
+alias grr='git remote rm'
+alias grv='git remote -v'
       gps() {
         if [[ $# -lt 1 || $1 == -* ]]; then
           CARE ">PC< git push origin >CB< $@";
