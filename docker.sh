@@ -76,23 +76,41 @@ dil()  { di -q | head -1 | tail -1; }
 da()   { [[ $# -eq 0 ]]&&A="$(dpsl)"||A="$@"; d attach --sig-proxy=false $A; }
 dl()   { [[ $# -eq 0 ]]&&A="$(dpsl)"||A="$@"; d logs $A 2>&1 | less -FXR; }
 dli()  { [[ $# -eq 0 ]]&&A="$(dil)"||A="$@"; d history $A 2>&1 | less -FSX; }
-dps()  { d ps $@ 2>&1 | less -FSX; }
-dpsa() {
-  d ps -a | awk 'NR==1{
-    A=index($0,"IMAGE");
-    B=substr($0,0,A-1);
-    C=index($0,"NAMES");
-    D=substr($0,A,C-A-1);
-    E=length($0);
-    F=substr($0,C)
+dps()  {
+  docker ps $@ | awk '
+  NR==1{
+    FIRSTLINEWIDTH=length($0)
+    IDPOS=index($0,"CONTAINER ID");
+    IMAGEPOS=index($0,"IMAGE");
+    COMMANDPOS=index($0,"COMMAND");
+    CREATEDPOS=index($0,"CREATED");
+    STATUSPOS=index($0,"STATUS");
+    PORTSPOS=index($0,"PORTS");
+    NAMESPOS=index($0,"NAMES");
+    UPDATECOL();
+  }
+  function UPDATECOL () {
+    ID=substr($0,IDPOS,IMAGEPOS-IDPOS-1);
+    IMAGE=substr($0,IMAGEPOS,COMMANDPOS-IMAGEPOS-1);
+    COMMAND=substr($0,COMMANDPOS,CREATEDPOS-COMMANDPOS-1);
+    CREATED=substr($0,CREATEDPOS,STATUSPOS-CREATEDPOS-1);
+    STATUS=substr($0,STATUSPOS,PORTSPOS-STATUSPOS-1);
+    PORTS=substr($0,PORTSPOS,NAMESPOS-PORTSPOS-1);
+    NAMES=substr($0, NAMESPOS);
+  }
+  function PRINT () {
+    print ID NAMES IMAGE STATUS CREATED COMMAND PORTS;
   }
   NR==2{
-    print B F sprintf("%*s",length($0)-E,"") D
+    NAMES=sprintf("%s%*s",NAMES,length($0)-FIRSTLINEWIDTH,"");
+    PRINT();
   }
   NR>1{
-    print substr($0,0,A-1)substr($0,C)substr($0,A,C-A-1)
+    UPDATECOL();
+    PRINT();
   }' | less -FSX;
 }
+dpsa() { dps -a $@; }
 din()  { d inspect $@ 2>&1 | less -FSX; }
 dlist(){
   [[ $# -lt 1 ]] && echo "List repo tags on hub registry: dlist <REPO>" || {
