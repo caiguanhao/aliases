@@ -20,7 +20,7 @@ CARE() {
   eval "$CMD"
 }
 export GLFMT="%C(bold blue)%h%C(reset) (%ar) %s"
-unalias g gar gb gbc gblc gbr gch gcl gclb gds gf gfh gg gl gla glc gld gmm gps gpl gsf 2>/dev/null
+unalias g gar gb gbc gblc gbr gch gcl gclb gds gf gfh gg gh gl gla glc gld gmm gps gpl gsf 2>/dev/null
 g() {
   [[ $# -lt 1 ]] && {
     (echo "g='git'" && \
@@ -36,6 +36,7 @@ g() {
     echo "gf='git fetch --all'" && \
     echo "gfh='git fetch and reset hard'" && \
     echo "gg='git grep'" && \
+    echo "gh='open github page'" && \
     echo "gl='git log'" && \
     echo "gla='git log (files created)'" && \
     echo "glc='gla'" && \
@@ -109,6 +110,22 @@ alias gdc='LESS=-FXR git diff --cached'
       gfh() { CARE ">PC< git fetch origin && git reset --hard >OCB<"; }
 alias gfp='git format-patch'
       gg() { git grep --break --heading -n -i -E $@; }
+      gh() {
+        URL=$(git remote -v 2>/dev/null | awk '/fetch/{
+          gsub(/^.*@|\.git$/,"",$2);
+          gsub(/:/,"/",$2);
+          "git rev-parse --abbrev-ref HEAD 2>/dev/null"|getline branch;
+          "pwd"|getline pwd;
+          "git rev-parse --show-toplevel 2>/dev/null"|getline root;
+          path=substr(pwd,length(root)+1);
+          print"https://"$2"/tree/"branch path;
+          exit
+        }');
+        [[ -z $URL ]] && {
+          echo "No GitHub link to open.";
+          return 1;
+        } || { echo Opening "$URL"; sleep 1; open "$URL"; }
+      }
 alias gi='git init'
       gl()  { LESS=-FXRS git log --format="$GLFMT" $@; }
       gla() { git log --diff-filter=A --format="%n$GLFMT" --summary $@; }
