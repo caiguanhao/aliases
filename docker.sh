@@ -1,5 +1,5 @@
 unalias d dex dexi dim dimi dcd di dil da dl dli dlist dps dpsa dpa dupa din \
-dwipe denter dexpose dclose dclean f 2>/dev/null
+denter dexpose dclose dclean f 2>/dev/null
 d() {
   [[ $# -lt 1 ]] && {
     (echo "d='docker'" && \
@@ -21,8 +21,6 @@ d() {
     echo "dpa='d pause all'" && \
     echo "dupa='d unpause all'" && \
     echo "din='d inspect | less'" && \
-    echo "drms='drm stopped'" && \
-    echo "dwipe='dka; drma; drmia'" && \
     echo "denter='enter a container'" && \
     echo "dexpose='expose a port'" && \
     echo "dclose='close a port'" && \
@@ -111,7 +109,7 @@ dps()  {
   }' | less -FSX;
 }
 dpsa() { dps -a $@; }
-din()  { d inspect $@ 2>&1 | less -FSX; }
+din()  { [[ $# -eq 0 ]]&&A="$(dpsl)"||A="$@"; d inspect $A 2>&1 | less -FSX; }
 dlist(){
   [[ $# -lt 1 ]] && echo "List repo tags on hub registry: dlist <REPO>" || {
     for arg in "$@"; do
@@ -122,9 +120,6 @@ dlist(){
 }
 dpa()  { for c in $(dpsaq); do dp $c; done; }
 dupa() { for c in $(dpsaq); do dup $c; done; }
-dwipe(){
-  dupa 2>/dev/null; dka 2>/dev/null; drma 2>/dev/null; drmia 2>/dev/null;
-}
 denter(){ sudo nsenter --target $(dpid $@) --mount --uts --ipc --net --pid; }
 dexpose(){
   [[ $# -lt 2 ]] && echo "dexpose <CONTAINER> <PORT>" || {
@@ -166,10 +161,7 @@ alias drd='d run -d'
 alias drit='d run -i -t'
 alias dritrm='d run -i -t --rm'
 alias drm='d rm'
-alias drms='drm $(comm -3 <(dps -q | sort) <(dpsaq | sort))'
-alias drma='d rm $(d ps -aq)'
 alias drmi='d rmi'
-alias drmia='d rmi $(d images -q)'
 alias drs='d restart'
 alias ds='d start'
 alias dsa='d save'
