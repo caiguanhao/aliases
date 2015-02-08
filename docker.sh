@@ -1,5 +1,5 @@
-unalias d dex dexi dim dimi dcd di dil da dl dli dlist dps dpsa dpa dupa din \
-denter dexpose dclose dclean f 2>/dev/null
+unalias d dex dexi dim dimi di dil da dl dli dlist dps dpsa dpa dupa din \
+dclean f 2>/dev/null
 d() {
   [[ $# -lt 1 ]] && {
     (echo "d='docker'" && \
@@ -7,23 +7,18 @@ d() {
     echo "dexi='d save | gzip'" && \
     echo "dim='cat | d import'" && \
     echo "dimi='d load -i'" && \
-    echo "dcd='cd to container root'" && \
     echo "di='d images | less'" && \
     echo "dil='d images | first'" && \
     echo "da='d attach'" && \
     echo "dl='d logs | less'" && \
     echo "dli='d history | less'" && \
     echo "dlist='list repo tags'" && \
-    echo "dpid='get state pid'" && \
     echo "dh='dli'" && \
     echo "dps='d ps | less'" && \
     echo "dpsa='d ps -a | less'" && \
     echo "dpa='d pause all'" && \
     echo "dupa='d unpause all'" && \
     echo "din='d inspect | less'" && \
-    echo "denter='enter a container'" && \
-    echo "dexpose='expose a port'" && \
-    echo "dclose='close a port'" && \
     echo "dclean='remove useless images'" && \
     alias | sed 's/^alias //' | \grep '^[df]' | \grep -E '(d |fig)') | awk '{
     K=$0;gsub(/=.*$/,"",K); gsub(/(^.*=\47)|(\47.*?$)/,"",$0);
@@ -60,14 +55,6 @@ dimi() {
   [[ $# -lt 1 ]] && echo "Import image: dimi <IMAGE.tar.gz>" || {
     d load --input="$1"
   }
-}
-dcd()  {
-  [[ $# -eq 0 ]]&&A="$(dpsl)"||A="$@";
-  ID="$(din -f '{{.Id}}' $A)"
-  DIRS="$(sudo find /var/lib/docker/ -maxdepth 3 -type d -name "$ID")"
-  for DIR in $DIRS; do
-    sudo ls -l "$DIR/root" >/dev/null 2>&1 && echo "$DIR" && cd "$DIR" 2>/dev/null
-  done
 }
 di()   { d images $@ 2>&1 | less -FSX; }
 dil()  { di -q | head -1 | tail -1; }
@@ -120,19 +107,6 @@ dlist(){
 }
 dpa()  { for c in $(dpsaq); do dp $c; done; }
 dupa() { for c in $(dpsaq); do dup $c; done; }
-denter(){ sudo nsenter --target $(dpid $@) --mount --uts --ipc --net --pid; }
-dexpose(){
-  [[ $# -lt 2 ]] && echo "dexpose <CONTAINER> <PORT>" || {
-    IP=$(din --format "{{.NetworkSettings.IPAddress}}" $1)
-    sudo iptables -t nat -A DOCKER -p tcp --dport $2 -j DNAT --to-destination $IP:$2
-  }
-}
-dclose(){
-  [[ $# -lt 2 ]] && echo "dclose <CONTAINER> <PORT>" || {
-    IP=$(din --format "{{.NetworkSettings.IPAddress}}" $1)
-    sudo iptables -t nat -D DOCKER -p tcp --dport $2 -j DNAT --to-destination $IP:$2
-  }
-}
 dclean(){
   XARGS=xargs
   if xargs --help 2>&1 | grep -q 'no-run-if-empty'; then
@@ -151,7 +125,6 @@ alias dinfo='d -D info'
 alias dk='d kill'
 alias dka='d kill $(d ps -aq)'
 alias dp='d pause'
-alias dpid='din --format "{{.State.Pid}}"'
 alias dpl='d pull'
 alias dpo='d port'
 alias dpsaq='d ps -a -q'
