@@ -126,7 +126,7 @@ dclean(){
   if xargs --help 2>&1 | grep -q 'no-run-if-empty'; then
     XARGS="$XARGS --no-run-if-empty"
   fi
-  docker images | grep '<none>' | awk '{print $3}' | $XARGS docker rmi;
+  docker images | awk '/<none>/{print $3}' | $XARGS docker rmi;
 }
 alias db='d build'
 alias dco='d commit'
