@@ -1,5 +1,5 @@
 unalias d dex dexi dim dimi di dil da dl dli dlist dps dpsa dpa dupa din \
-dclean f 2>/dev/null
+dip dclean f 2>/dev/null
 d() {
   [[ $# -lt 1 ]] && {
     (echo "d='docker'" && \
@@ -19,6 +19,7 @@ d() {
     echo "dpa='d pause all'" && \
     echo "dupa='d unpause all'" && \
     echo "din='d inspect | less'" && \
+    echo "dip='container ip address'" && \
     echo "dclean='remove useless images'" && \
     alias | sed 's/^alias //' | \grep '^[df]' | \grep -E '(d |fig)') | awk '{
     K=$0;gsub(/=.*$/,"",K); gsub(/(^.*=\47)|(\47.*?$)/,"",$0);
@@ -96,7 +97,20 @@ dps()  {
   }' | less -FSX;
 }
 dpsa() { dps -a $@; }
-din()  { [[ $# -eq 0 ]]&&A="$(dpsl)"||A="$@"; d inspect $A 2>&1 | less -FSX; }
+din()  {
+  ([[ $# -eq 0 ]] && {
+    d inspect $(dpsl) 2>&1
+  } || {
+    d inspect $@ 2>&1
+  }) | less -FSX;
+}
+dip()  {
+  ([[ $# -eq 0 ]] && {
+    d inspect --format '{{ .NetworkSettings.IPAddress }}' $(dpsl) 2>&1
+  } || {
+    d inspect --format '{{ .NetworkSettings.IPAddress }}' $@ 2>&1
+  }) | less -FSX;
+}
 dlist(){
   [[ $# -lt 1 ]] && echo "List repo tags on hub registry: dlist <REPO>" || {
     for arg in "$@"; do
