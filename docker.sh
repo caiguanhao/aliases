@@ -1,8 +1,9 @@
 unalias d dex dexi dim dimi di dil da dl dli dlist dps dpsa dpa dupa din \
-dip dclean f 2>/dev/null
+dip dclean 2>/dev/null
 d() {
   [[ $# -lt 1 ]] && {
     (echo "d='docker'" && \
+    echo "dc='docker-compose'" && \
     echo "dex='d export | gzip'" && \
     echo "dexi='d save | gzip'" && \
     echo "dim='cat | d import'" && \
@@ -21,19 +22,11 @@ d() {
     echo "din='d inspect | less'" && \
     echo "dip='container ip address'" && \
     echo "dclean='remove useless images'" && \
-    alias | sed 's/^alias //' | \grep '^[df]' | \grep -E '(d |fig)') | awk '{
+    alias | sed 's/^alias //' | \grep '^d' | \grep -E 'd ') | awk '{
     K=$0;gsub(/=.*$/,"",K); gsub(/(^.*=\47)|(\47.*?$)/,"",$0);
     printf "%7s = %s\n",K,$0}' | sort -k 1,1 -b | \
     column -c $(tput cols) | less -SFX
   } || eval 'docker $@'
-}
-f() {
-  [[ $# -lt 1 ]] && {
-    alias | sed 's/^alias //' | \grep '^f' | \grep 'fig' | awk '{
-    K=$0;gsub(/=.*$/,"",K); gsub(/(^.*=\47)|(\47.*?$)/,"",$0);
-    printf "%7s = %s\n",K,$0}' | sort -k 1,1 -b | \
-    column -c $(tput cols) | less -SFX
-  } || eval 'fig $@'
 }
 dex() {
   [[ $# -lt 1 ]] && echo "Export container: dex <CONT> [CONT.tar.gz]" || {
@@ -157,6 +150,40 @@ alias dsta='d stop $(d ps -aq)'
 alias dt='d tag'
 alias dup='d unpause'
 
+unalias dc f 2>/dev/null
+alias fig='dc'
+alias fig='docker-compose'
+dc() {
+  [[ $# -lt 1 ]] && {
+    alias | sed 's/^alias //' | \grep '^dc' | \grep 'docker-compose' | awk '{
+    K=$0;gsub(/=.*$/,"",K); gsub(/(^.*=\47)|(\47.*?$)/,"",$0);
+    printf "%7s = %s\n",K,$0}' | sort -k 1,1 -b | \
+    column -c $(tput cols) | less -SFX
+  } || eval 'docker-compose $@'
+}
+alias dcb='docker-compose build'
+alias dck='docker-compose kill'
+alias dcl='docker-compose logs'
+alias dcps='docker-compose ps'
+alias dcpl='docker-compose pull'
+alias dcrm='docker-compose rm'
+alias dcr='docker-compose run'
+alias dcrd='docker-compose run -d'
+alias dcrrm='docker-compose run --rm'
+alias dcrs='docker-compose restart'
+alias dcs='docker-compose start'
+alias dcsc='docker-compose scale'
+alias dcst='docker-compose stop'
+alias dcup='docker-compose up'
+alias dcud='docker-compose up -d'
+f() {
+  [[ $# -lt 1 ]] && {
+    alias | sed 's/^alias //' | \grep '^f' | \grep 'fig' | awk '{
+    K=$0;gsub(/=.*$/,"",K); gsub(/(^.*=\47)|(\47.*?$)/,"",$0);
+    printf "%7s = %s\n",K,$0}' | sort -k 1,1 -b | \
+    column -c $(tput cols) | less -SFX
+  } || eval 'fig $@'
+}
 alias fb='fig build'
 alias fk='fig kill'
 alias fl='fig logs'
