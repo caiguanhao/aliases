@@ -1,25 +1,8 @@
-unalias ? reload 2>/dev/null
-
-function ? {
-  printf "c='clear'"\
-"\nbashrc='edit bashrc and reload'"\
-"\nzshrc='edit zshrc and reload'"\
-"\nreload='reload bashrc or zshrc'"\
-"\npc='toggle enable proxychains'"\
-"\ngrepm='grep improved'"\
-"\nsshx='remote sends file to local'"\
-"\nsendx='remote sends file/pasteboard'"\
-"\nlistenx='receive remote files'"\
-"\n" | awk '{K=$0;gsub(/=.*$/,"",K);
-  gsub(/(^.*=\47)|(\47.*?$)/,"",$0);
-  printf "%7s = %s\n",K,$0}' | \
-  column -c $(tput cols) | less -SFX
-}
-
 alias c='clear'
-
 alias bashrc='vim ~/.bashrc && source ~/.bashrc'
 alias zshrc='vim ~/.zshrc && source ~/.zshrc'
+
+unalias reload 2>/dev/null
       reload() {
         [[ -e ~/.zshrc ]] && {
           source ~/.zshrc
