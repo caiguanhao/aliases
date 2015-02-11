@@ -27,8 +27,10 @@ alias zshrc='vim ~/.zshrc && source ~/.zshrc'
           source ~/.bashrc
         }
       }
-unalias grep 2>/dev/null
-alias grepm='grep --exclude-dir={node_modules,bower_components,dist,.bzr,.cvs,.git,.hg,.svn,.tmp} --color=always'
+
+# network
+
+alias nload='nload -u K'
 
 # proxychains
 
