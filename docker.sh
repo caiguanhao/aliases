@@ -99,9 +99,9 @@ din()  {
 }
 dip()  {
   ([[ $# -eq 0 ]] && {
-    d inspect --format '{{ .NetworkSettings.IPAddress }}' $(dpsl) 2>&1
+    d inspect --format '{{.NetworkSettings.IPAddress}}' $(dpsl) 2>&1
   } || {
-    d inspect --format '{{ .NetworkSettings.IPAddress }}' $@ 2>&1
+    d inspect --format '{{.NetworkSettings.IPAddress}}' $@ 2>&1
   }) | less -FSX;
 }
 dlist(){
@@ -130,7 +130,6 @@ alias deit='d exec -i -t'
 alias dh='dli'
 alias dinfo='d -D info'
 alias dk='d kill'
-alias dka='d kill $(d ps -aq)'
 alias dp='d pause'
 alias dpl='d pull'
 alias dpo='d port'
@@ -146,7 +145,6 @@ alias drs='d restart'
 alias ds='d start'
 alias dsa='d save'
 alias dst='d stop'
-alias dsta='d stop $(d ps -aq)'
 alias dt='d tag'
 alias dup='d unpause'
 
