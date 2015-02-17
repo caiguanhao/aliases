@@ -58,7 +58,7 @@ dli()  { [[ $# -eq 0 ]]&&A="$(dil)"||A="$@"; d history $A 2>&1 | less -FSX; }
 dps()  {
   docker ps $@ | awk '
   NR==1{
-    FIRSTLINEWIDTH=length($0)
+    FIRSTLINEWIDTH=length($0);
     IDPOS=index($0,"CONTAINER ID");
     IMAGEPOS=index($0,"IMAGE");
     COMMANDPOS=index($0,"COMMAND");
@@ -78,7 +78,7 @@ dps()  {
     NAMES=substr($0, NAMESPOS);
   }
   function PRINT () {
-    print ID NAMES IMAGE STATUS CREATED COMMAND PORTS;
+    print ID NAMES IMAGE STATUS CREATED PORTS;
   }
   NR==2{
     NAMES=sprintf("%s%*s",NAMES,length($0)-FIRSTLINEWIDTH,"");
