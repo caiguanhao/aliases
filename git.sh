@@ -20,7 +20,7 @@ CARE() {
   eval "$CMD"
 }
 export GLFMT="%C(bold blue)%h%C(reset) (%ar) %s"
-unalias g gar gb gbc gblc gbr gch gcl gclb gds gf gfh gg gh gl gla glc gld gmm gps gpl gsf 2>/dev/null
+unalias g gar gb gbc gblc gbr gcb gch gcl gclb gds gf gfh gg gh gl gla glc gld gmm gps gpl gsf 2>/dev/null
 g() {
   [[ $# -lt 1 ]] && {
     (echo "g='git'" && \
@@ -29,6 +29,7 @@ g() {
     echo "gbc='show current branch'" && \
     echo "gblc='count contribs by author'" && \
     echo "gbr='show recent git branches'" && \
+    echo "gcb='choose branch to checkout'" && \
     echo "gch='git cherry -v'" && \
     echo "gcl='git clone'" && \
     echo "gclb='clone single branch'" && \
@@ -80,6 +81,20 @@ alias gc='git checkout'
         }
       }
 alias gc-='git checkout -'
+      gbrr(){
+        git for-each-ref --sort=-committerdate \
+        --format "%(refname:short)" refs/heads/;
+      }
+      gcb() {
+        local BRANCH;
+        gbrr | awk '{print NR") "$0}';
+        while [[ -z "$BRANCH" ]]; do
+          printf "Enter branch number to checkout to: ";
+          read ANSWER;
+          BRANCH="$(gbrr | head -n $ANSWER 2>/dev/null | tail -1)";
+        done;
+        git checkout $BRANCH;
+      }
 alias gcm='git checkout master'
 alias gco='git commit'
 alias gcoa='git commit --amend'
