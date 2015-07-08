@@ -96,6 +96,7 @@ alias gc-='git checkout -'
         git checkout $BRANCH;
       }
 alias gcm='git checkout master'
+alias gcs='git checkout staging'
 alias gco='git commit'
 alias gcoa='git commit --amend'
 alias gcp='git cherry-pick'
@@ -148,6 +149,7 @@ alias gi='git init'
       gld() { git log --diff-filter=D --format="%n$GLFMT" --summary $@; }
 alias gm='git merge'
       gmm() { CARE "git checkout master && git merge >CB<"; }
+      gms() { CARE "git checkout staging && git merge >CB<"; }
 alias gr='git rebase'
 alias gra='git rebase --abort'
 alias grao='git remote add origin'
