@@ -1,6 +1,16 @@
 alias c='clear'
 alias bashrc='vim ~/.bashrc && source ~/.bashrc'
 alias zshrc='vim ~/.zshrc && source ~/.zshrc'
+alias goaccess="goaccess --log-format '%h %^[%d:%t %^] \"%r\" %s %b \"%R\" \"%u\"' --date-format '%d/%b/%Y' --time-format '%H:%M:%S'"
+
+alias npm='npm --loglevel http'
+alias npmtb='npm --registry=https://registry.npm.taobao.org --disturl=https://npm.taobao.org/dist --phantomjs_cdnurl=https://npm.taobao.org/dist/phantomjs'
+
+alias cdh='cd /home/deploy/projects/hittiger/current'
+alias cds='cd /home/deploy/projects/superman/current'
+alias cdn='cd /data/log/nginx'
+alias rc='./bin/rails c'
+alias psg='ps aux | grep'
 
 unalias reload 2>/dev/null
       reload() {
@@ -42,43 +52,3 @@ pcconf() {
     vim ~/.proxychains/proxychains.conf
   }
 }
-
-# ssh
-
-unalias sendx listenx 2>/dev/null
-alias sshx='ssh -R 29431:localhost:29431'
-      sendx() {
-        [[ $# -lt 2 ]] && {
-          Files="pasteboard"
-          [[ $# -eq 1 ]] && {
-            if cat $1 | file - | grep -iq text; then
-              cp $1 /tmp
-              cp $1 /tmp/pasteboard
-              Files="$(basename "$1") pasteboard"
-            else
-              tar -cvf - $1 | gzip | nc -q0 localhost 29431
-              return
-            fi
-          } || {
-            cat > /tmp/pasteboard
-          }
-          tar -C /tmp -cvf - $Files | gzip | nc -q0 localhost 29431
-          (cd /tmp && rm -f $Files)
-        } || {
-          tar -cvf - $@ | gzip | nc -q0 localhost 29431
-        }
-      }
-      listenx() {
-        mkdir -p tmp
-        echo "use sendx command on remote system to send files to ./tmp"
-        while :; do
-          nc -l 29431 | tar -C tmp -xvz -f -
-          if [[ -f tmp/pasteboard ]]; then
-            if file tmp/pasteboard | grep -iq text; then
-              cat tmp/pasteboard | pbcopy
-            fi
-            rm -f tmp/pasteboard
-          fi
-          sleep 0.5
-        done
-      }

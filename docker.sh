@@ -55,55 +55,10 @@ dil()  { di -q | head -1 | tail -1; }
 da()   { [[ $# -eq 0 ]]&&A="$(dpsl)"||A="$@"; d attach --sig-proxy=false $A; }
 dl()   { [[ $# -eq 0 ]]&&A="$(dpsl)"||A="$@"; d logs $A 2>&1 | less -FXR; }
 dli()  { [[ $# -eq 0 ]]&&A="$(dil)"||A="$@"; d history $A 2>&1 | less -FSX; }
-dps()  {
-  docker ps $@ | awk '
-  NR==1{
-    FIRSTLINEWIDTH=length($0);
-    IDPOS=index($0,"CONTAINER ID");
-    IMAGEPOS=index($0,"IMAGE");
-    COMMANDPOS=index($0,"COMMAND");
-    CREATEDPOS=index($0,"CREATED");
-    STATUSPOS=index($0,"STATUS");
-    PORTSPOS=index($0,"PORTS");
-    NAMESPOS=index($0,"NAMES");
-    UPDATECOL();
-  }
-  function UPDATECOL () {
-    ID=substr($0,IDPOS,IMAGEPOS-IDPOS-1);
-    IMAGE=substr($0,IMAGEPOS,COMMANDPOS-IMAGEPOS-1);
-    COMMAND=substr($0,COMMANDPOS,CREATEDPOS-COMMANDPOS-1);
-    CREATED=substr($0,CREATEDPOS,STATUSPOS-CREATEDPOS-1);
-    STATUS=substr($0,STATUSPOS,PORTSPOS-STATUSPOS-1);
-    PORTS=substr($0,PORTSPOS,NAMESPOS-PORTSPOS-1);
-    NAMES=substr($0, NAMESPOS);
-  }
-  function PRINT () {
-    print ID NAMES IMAGE STATUS CREATED PORTS;
-  }
-  NR==2{
-    NAMES=sprintf("%s%*s",NAMES,length($0)-FIRSTLINEWIDTH,"");
-    PRINT();
-  }
-  NR>1{
-    UPDATECOL();
-    PRINT();
-  }' | less -FSX;
-}
+dps()  { docker ps $@ --format "table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.RunningFor}}\t{{.Ports}}" | less -FSX; }
 dpsa() { dps -a $@; }
-din()  {
-  ([[ $# -eq 0 ]] && {
-    d inspect $(dpsl) 2>&1
-  } || {
-    d inspect $@ 2>&1
-  }) | less -FSX;
-}
-dip()  {
-  ([[ $# -eq 0 ]] && {
-    d inspect --format '{{.NetworkSettings.IPAddress}}' $(dpsl) 2>&1
-  } || {
-    d inspect --format '{{.NetworkSettings.IPAddress}}' $@ 2>&1
-  }) | less -FSX;
-}
+din()  { [[ $# -eq 0 ]]&&A="$(dpsl)"||A="$@"; d inspect $A 2>&1 | less -FSX; }
+dip()  { [[ $# -eq 0 ]]&&A="$(dpsl)"||A="$@"; d inspect --format '{{.NetworkSettings.IPAddress}}' $A 2>&1 | less -FSX; }
 dlist(){
   [[ $# -lt 1 ]] && echo "List repo tags on hub registry: dlist <REPO>" || {
     for arg in "$@"; do
@@ -149,8 +104,6 @@ alias dt='d tag'
 alias dup='d unpause'
 
 unalias dc f 2>/dev/null
-alias fig='dc'
-alias fig='docker-compose'
 dc() {
   [[ $# -lt 1 ]] && {
     alias | sed 's/^alias //' | \grep '^dc' | \grep 'docker-compose' | awk '{
@@ -174,27 +127,3 @@ alias dcsc='docker-compose scale'
 alias dcst='docker-compose stop'
 alias dcup='docker-compose up'
 alias dcud='docker-compose up -d'
-f() {
-  [[ $# -lt 1 ]] && {
-    alias | sed 's/^alias //' | \grep '^f' | \grep 'fig' | awk '{
-    K=$0;gsub(/=.*$/,"",K); gsub(/(^.*=\47)|(\47.*?$)/,"",$0);
-    printf "%7s = %s\n",K,$0}' | sort -k 1,1 -b | \
-    column -c $(tput cols) | less -SFX
-  } || eval 'fig $@'
-}
-alias fb='fig build'
-alias fk='fig kill'
-alias fl='fig logs'
-alias fp='fig port'
-alias fps='fig ps'
-alias fpl='fig pull'
-alias frm='fig rm'
-alias fr='fig run'
-alias frd='fig run -d'
-alias frrm='fig run --rm'
-alias frs='fig restart'
-alias fs='fig start'
-alias fsc='fig scale'
-alias fst='fig stop'
-alias fup='fig up'
-alias fud='fig up -d'
