@@ -20,38 +20,7 @@ CARE() {
   eval "$CMD"
 }
 export GLFMT="%C(bold blue)%h%C(reset) (%ar) %s"
-unalias g gar gb gbc gblc gbr gcb gch gcl gclb gds gf gfh gg gh gl gla glc gld gmm gps gpl gsf 2>/dev/null
-g() {
-  [[ $# -lt 1 ]] && {
-    (echo "g='git'" && \
-    echo "gar='archive current branch'" && \
-    echo "gb='git branch'" && \
-    echo "gbc='show current branch'" && \
-    echo "gblc='count contribs by author'" && \
-    echo "gbr='show recent git branches'" && \
-    echo "gcb='choose branch to checkout'" && \
-    echo "gch='git cherry -v'" && \
-    echo "gcl='git clone'" && \
-    echo "gclb='clone single branch'" && \
-    echo "gds='show diff size changes'" && \
-    echo "gf='git fetch --all'" && \
-    echo "gfh='git fetch and reset hard'" && \
-    echo "gg='git grep'" && \
-    echo "gh='open github page'" && \
-    echo "gl='git log'" && \
-    echo "gla='git log (files created)'" && \
-    echo "glc='gla'" && \
-    echo "gld='git log (files deleted)'" && \
-    echo "gmm='checkout master, merge'" && \
-    echo "gps='git push (current branch)'" && \
-    echo "gpl='git pull (current branch)'" && \
-    echo "gsf='diff stash [number]'" && \
-    alias | sed 's/^alias //' | \grep -Fv .git | \grep git) | awk '{
-    K=$0;gsub(/=.*$/,"",K); gsub(/(^.*=\47)|(\47.*?$)/,"",$0);
-    printf "%5s = %s\n",K,$0}' | sort -k 1,1 -b | \
-    column -c $(tput cols) | less -SFX
-  } || eval "git $@"
-}
+unalias gar gb gbc gblc gbr gcb gch gcl gclb gds gf gfh gg gh gl gla glc gld gmm gps gpl gsf 2>/dev/null
 alias ga='git add'
 alias gaa='git add -A .'
 alias gam='git am'
