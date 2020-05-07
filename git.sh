@@ -112,7 +112,7 @@ alias gfp='git format-patch'
         } || { echo Opening "$URL"; sleep 1; open "$URL"; }
       }
 alias gi='git init'
-      gl()  { LESS=-FXRS git log --format="$GLFMT" $@; }
+      gl()  { LESS=-FXRS git -c log.showsignature=false log --format="$GLFMT" $@; }
       gla() { git log --diff-filter=A --format="%n$GLFMT" --summary $@; }
       glc() { gla; }
       gld() { git log --diff-filter=D --format="%n$GLFMT" --summary $@; }
