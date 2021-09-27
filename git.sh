@@ -69,8 +69,8 @@ alias gcs='git checkout staging'
 alias gco='git commit'
 alias gcoa='git commit --amend'
 alias gcp='git cherry-pick'
-alias gd='LESS=-FXR git diff'
-alias gdc='LESS=-FXR git diff --cached'
+alias gd='LESS=-FXSR git diff'
+alias gdc='LESS=-FXSR git diff --cached'
       gds() {
         git diff --raw --abbrev=40 $@ | awk '{
         orig="git cat-file -s "$3" 2>/dev/null"; orig | getline origsize;
